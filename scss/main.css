@@ -11979,4 +11979,36 @@ textarea.form-control-lg {
   .d-print-none {
     display: none !important;
   }
+}
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+nav {
+  background-color: #228B22;
+  font-family: "Mooli", sans-serif;
+  color: white;
+}
+
+.navbar-brand {
+  color: white;
+}
+
+.nav-link {
+  color: white;
+}
+
+#navbar-title {
+  font-family: "Lumanosimo", sans-serif;
+}
+
+footer.footer {
+  padding: 15px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: #228B22;
+  font-family: "Mooli", sans-serif;
+  color: white;
 }/*# sourceMappingURL=main.css.map */
