@@ -21,18 +21,45 @@ nav {
 }
 .nav-link {
     color: white;
+    margin: 0 2rem;
+   
 
 }
 #navbar-title {
     font-family:"Lumanosimo", sans-serif;
+    letter-spacing: 0.1em;
+    font-size: 200%;
+    margin: 0% 5em;
+}
+// page accueil 
+.hero-scene {
+
+    padding-top: 35px;
+    font-size: 150%;
 }
 
+.container {
+    column-count: 2;
+    margin-top: 2em;
+    font-size: 135%;
+    
+}
+
+.covoit{
+
+    background-image: url("../Image/van jaune.jpg");
+    background-size: cover;
+    filter: birghtness(0.3);
+
+}
+    
 
 
+ 
 // Footer
-
+main{margin-bottom: 200px;}
 footer.footer {
-    padding: 15px;
+    padding: 13px;
     position: absolute;
     bottom: 0;
     width: 100%;
