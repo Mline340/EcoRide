@@ -29,7 +29,6 @@ nav {
     font-family:"Lumanosimo", sans-serif;
     letter-spacing: 0.1em;
     font-size: 200%;
-    margin: 0% 5em;
 }
 // page accueil 
 .hero-scene {
@@ -45,16 +44,13 @@ nav {
     
 }
 
-.covoit{
-
-    background-image: url("../Image/van jaune.jpg");
+.Image-van{
+   
     background-size: cover;
     filter: birghtness(0.3);
-
+    
 }
     
-
-
  
 // Footer
 main{margin-bottom: 200px;}

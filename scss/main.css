@@ -12004,7 +12004,6 @@ nav {
   font-family: "Lumanosimo", sans-serif;
   letter-spacing: 0.1em;
   font-size: 200%;
-  margin: 0% 5em;
 }
 
 .hero-scene {
@@ -12019,8 +12018,7 @@ nav {
   font-size: 135%;
 }
 
-.covoit {
-  background-image: url("../Image/van jaune.jpg");
+.Image-van {
   background-size: cover;
   filter: birghtness(0.3);
 }
