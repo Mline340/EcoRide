@@ -34,13 +34,16 @@ nav {
 .hero-scene {
 
     padding-top: 35px;
-    font-size: 150%;
+    font-size: clamp(15px, 5vw, 35px);
+    margin: 2vw;
+    
+
 }
 
 .container {
     column-count: 2;
     margin-top: 2em;
-    font-size: 135%;
+    font-size: clamp(10px, 5vw, 25px);
     
 }
 
@@ -50,16 +53,27 @@ nav {
     filter: birghtness(0.3);
     
 }
-    
- 
+
+
 // Footer
 main{margin-bottom: 200px;}
 footer.footer {
-    padding: 13px;
+    //padding-top: 10px;
     position: absolute;
     bottom: 0;
     width: 100%;
     background-color: $primary;
     font-family: $font-family-sans-serif; color: white;
+    
+}
+
+// historique
+.alltrajets{
+    a{
+        display: block;
+        color: $black;
+        padding: 10px;
+    }
+
 
 }

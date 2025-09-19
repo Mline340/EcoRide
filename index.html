@@ -17,7 +17,7 @@
 <body>
        <header>
         <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
+            <div class="container-fluid ms-4 ms-md-4 ms-lg-5">
               <a class="navbar-brand" id="navbar-title" href="/">EcoRide</a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -45,18 +45,17 @@
 
     <main id = "main-page">
       <!--- contenu du site --->
-
      
       
     </main>
        <footer class="text-center footer">
         <div class="row">
-            <div class="col-6 col-lg-4">
+            <div class="col-12 col-lg-4">
                 <p>contact@ecoride.fr</p>
             </div>
             <div class="col-lg-4">
             </div>
-            <div class="col-6 col-lg-">
+            <div class="col-12 col-lg-4">
                 <p>Mentions Légales</p>
             </div>
         </div>
@@ -64,5 +63,12 @@
 
     <script type = "module" src="Router/router.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script text="javascript">
+        function showHideForm() {
+            document.getElementById("formulaireModification").hidden = false
+        }
+    </script>
+
 </body>
 </html>

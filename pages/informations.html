@@ -1,0 +1,39 @@
+<div class= "hero-scene text-center">
+
+<div class="hero-scene-contant">
+    <p>Mes informations</p>
+    
+</div>
+</div>
+
+<div class="hero-scene">
+    <div class="text-center">
+        <button onclick="showHideForm()" type="button" class="btn btn-secondary">Modifier vos informations</button>
+       
+        
+    </div>
+
+    <form id="formulaireModification" hidden="true">
+            <div class="ms-2 ms-md-4 ms-lg-5">
+                <div class="me-2 me-md-4 me-lg-5">
+                    <div class="mb-3">
+                         <label for="NomInput" class="form-label">Pseudo</label>
+          <input type="text" class="form-control" id="NomInput" placeholder="Votre Pseudo" name="Email"> 
+                    </div>
+                    <div class="mb-3">
+                         <label for="EmailInput" class="form-label">Email</label>
+          <input type="email" class="form-control" id="EmailInput" placeholder="test@mail.fr" name="Email"> 
+                    </div>
+        <div class="mb-3">
+          <label for="PasswordInput" class="form-label">Mot de passe</label>
+          <input type="password" class="form-control" id="PasswordInput" name="Password">
+        </div> 
+        <div class="mb-3">
+          <label for="ValidatePasswordInput" class="form-label"> Validez votre mot de passe</label>
+          <input type="password" class="form-control" id="ValidatePasswordInput" name="Password">
+        </div>     
+
+        <button type="submit" class="btn btn-secondary">Confirmer</button>
+    </form>
+</div>
+

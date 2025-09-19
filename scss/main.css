@@ -12008,14 +12008,15 @@ nav {
 
 .hero-scene {
   padding-top: 35px;
-  font-size: 150%;
+  font-size: clamp(15px, 5vw, 35px);
+  margin: 2vw;
 }
 
 .container {
   -moz-column-count: 2;
        column-count: 2;
   margin-top: 2em;
-  font-size: 135%;
+  font-size: clamp(10px, 5vw, 25px);
 }
 
 .Image-van {
@@ -12028,11 +12029,16 @@ main {
 }
 
 footer.footer {
-  padding: 13px;
   position: absolute;
   bottom: 0;
   width: 100%;
   background-color: #228B22;
   font-family: "Mooli", sans-serif;
   color: white;
+}
+
+.alltrajets a {
+  display: block;
+  color: #000;
+  padding: 10px;
 }/*# sourceMappingURL=main.css.map */
