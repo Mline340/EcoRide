@@ -12,9 +12,10 @@ function checkCredentials(){
 
         // Il faudra récupérer le vrai token 
         const token ="dkjggjqdgqjgj"
-
+        setToken(token);
         //placer ce token en cookie
 
+        setCookie(RoleCookieName, "admin", 7);
         window.location.replace("/");
     }
     else{
