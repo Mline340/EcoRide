@@ -35,8 +35,8 @@ class Utilisateur
     #[ORM\Column(length: 50)]
     private ?string $date_naissance = null;
 
-    #[ORM\Column(type: Types::BLOB)]
-    private $photo = null;
+    #[ORM\Column(length: 50)]
+    private ?string $photo = null;
 
     #[ORM\Column(length: 50)]
     private ?string $pseudo = null;
