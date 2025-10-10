@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\VoitureRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VoitureRepository::class)]
@@ -27,6 +29,24 @@ class Voiture
 
     #[ORM\Column(length: 50)]
     private ?string $date_premiere_immatriculation = null;
+
+    #[ORM\ManyToOne(inversedBy: 'voitures')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Utilisateur $Utilisateur = null;
+
+    /**
+     * @var Collection<int, Covoiturage>
+     */
+    #[ORM\OneToMany(targetEntity: Covoiturage::class, mappedBy: 'voiture')]
+    private Collection $Covoiturage;
+
+    #[ORM\ManyToOne(inversedBy: 'voitures')]
+    private ?Marque $Marque = null;
+
+    public function __construct()
+    {
+        $this->Covoiturage = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -89,6 +109,60 @@ class Voiture
     public function setDatePremiereImmatriculation(string $date_premiere_immatriculation): static
     {
         $this->date_premiere_immatriculation = $date_premiere_immatriculation;
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?Utilisateur
+    {
+        return $this->Utilisateur;
+    }
+
+    public function setUtilisateur(?Utilisateur $Utilisateur): static
+    {
+        $this->Utilisateur = $Utilisateur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Covoiturage>
+     */
+    public function getCovoiturage(): Collection
+    {
+        return $this->Covoiturage;
+    }
+
+    public function addCovoiturage(Covoiturage $covoiturage): static
+    {
+        if (!$this->Covoiturage->contains($covoiturage)) {
+            $this->Covoiturage->add($covoiturage);
+            $covoiturage->setVoiture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCovoiturage(Covoiturage $covoiturage): static
+    {
+        if ($this->Covoiturage->removeElement($covoiturage)) {
+            // set the owning side to null (unless already changed)
+            if ($covoiturage->getVoiture() === $this) {
+                $covoiturage->setVoiture(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getMarque(): ?Marque
+    {
+        return $this->Marque;
+    }
+
+    public function setMarque(?Marque $Marque): static
+    {
+        $this->Marque = $Marque;
 
         return $this;
     }

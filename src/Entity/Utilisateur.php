@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UtilisateurRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -30,16 +32,52 @@ class Utilisateur
     private ?string $telephone = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $adresse = null;
+    private ?string $ville = null;
 
     #[ORM\Column(length: 50)]
     private ?string $date_naissance = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 150)]
     private ?string $photo = null;
 
     #[ORM\Column(length: 50)]
     private ?string $pseudo = null;
+
+    #[ORM\Column]
+    private ?int $code_postal = null;
+
+    /**
+     * @var Collection<int, Voiture>
+     */
+    #[ORM\OneToMany(targetEntity: Voiture::class, mappedBy: 'Utilisateur', orphanRemoval: true)]
+    private Collection $voitures;
+
+    #[ORM\ManyToOne(inversedBy: 'utilisateurs')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Role $Role = null;
+
+    /**
+     * @var Collection<int, Avis>
+     */
+    #[ORM\ManyToMany(targetEntity: Avis::class, inversedBy: 'utilisateurs')]
+    private Collection $Avis;
+
+    /**
+     * @var Collection<int, Covoiturage>
+     */
+    #[ORM\ManyToMany(targetEntity: Covoiturage::class, inversedBy: 'utilisateurs')]
+    private Collection $Covoiturage;
+
+    #[ORM\OneToOne(inversedBy: 'utilisateur', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Configuration $configuration = null;
+
+    public function __construct()
+    {
+        $this->voitures = new ArrayCollection();
+        $this->Avis = new ArrayCollection();
+        $this->Covoiturage = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -150,6 +188,120 @@ class Utilisateur
     public function setPseudo(string $pseudo): static
     {
         $this->pseudo = $pseudo;
+
+        return $this;
+    }
+
+    public function getCodePostal(): ?int
+    {
+        return $this->code_postal;
+    }
+
+    public function setCodePostal(int $code_postal): static
+    {
+        $this->code_postal = $code_postal;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Voiture>
+     */
+    public function getVoitures(): Collection
+    {
+        return $this->voitures;
+    }
+
+    public function addVoiture(Voiture $voiture): static
+    {
+        if (!$this->voitures->contains($voiture)) {
+            $this->voitures->add($voiture);
+            $voiture->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVoiture(Voiture $voiture): static
+    {
+        if ($this->voitures->removeElement($voiture)) {
+            // set the owning side to null (unless already changed)
+            if ($voiture->getUtilisateur() === $this) {
+                $voiture->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getRole(): ?Role
+    {
+        return $this->Role;
+    }
+
+    public function setRole(?Role $Role): static
+    {
+        $this->Role = $Role;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Avis>
+     */
+    public function getAvis(): Collection
+    {
+        return $this->Avis;
+    }
+
+    public function addAvi(Avis $avi): static
+    {
+        if (!$this->Avis->contains($avi)) {
+            $this->Avis->add($avi);
+        }
+
+        return $this;
+    }
+
+    public function removeAvi(Avis $avi): static
+    {
+        $this->Avis->removeElement($avi);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Covoiturage>
+     */
+    public function getCovoiturage(): Collection
+    {
+        return $this->Covoiturage;
+    }
+
+    public function addCovoiturage(Covoiturage $covoiturage): static
+    {
+        if (!$this->Covoiturage->contains($covoiturage)) {
+            $this->Covoiturage->add($covoiturage);
+        }
+
+        return $this;
+    }
+
+    public function removeCovoiturage(Covoiturage $covoiturage): static
+    {
+        $this->Covoiturage->removeElement($covoiturage);
+
+        return $this;
+    }
+
+    public function getConfiguration(): ?Configuration
+    {
+        return $this->configuration;
+    }
+
+    public function setConfiguration(Configuration $configuration): static
+    {
+        $this->configuration = $configuration;
 
         return $this;
     }
