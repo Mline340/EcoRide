@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 class Utilisateur
@@ -14,37 +16,48 @@ class Utilisateur
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['utilisateur:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['utilisateur:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['utilisateur:read'])]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['utilisateur:read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['utilisateur:read'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['utilisateur:read'])]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['utilisateur:read'])]
     private ?string $ville = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['utilisateur:read'])]
     private ?string $date_naissance = null;
 
     #[ORM\Column(length: 150)]
+    #[Groups(['utilisateur:read'])]
     private ?string $photo = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['utilisateur:read'])]
     private ?string $pseudo = null;
 
-    #[ORM\Column]
-    private ?int $code_postal = null;
+    #[ORM\Column(length: 5)]
+    #[Groups(['utilisateur:read'])]
+    private ?string $code_postal = null;
 
     /**
      * @var Collection<int, Voiture>
@@ -144,18 +157,6 @@ class Utilisateur
         return $this;
     }
 
-    public function getAdresse(): ?string
-    {
-        return $this->adresse;
-    }
-
-    public function setAdresse(string $adresse): static
-    {
-        $this->adresse = $adresse;
-
-        return $this;
-    }
-
     public function getDateNaissance(): ?string
     {
         return $this->date_naissance;
@@ -168,7 +169,7 @@ class Utilisateur
         return $this;
     }
 
-    public function getPhoto()
+    public function getPhoto(): ?string
     {
         return $this->photo;
     }
@@ -192,12 +193,24 @@ class Utilisateur
         return $this;
     }
 
-    public function getCodePostal(): ?int
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(string $ville): static
+    {
+        $this->ville = $ville;
+
+        return $this;
+    }
+
+    public function getCodePostal():  ?string
     {
         return $this->code_postal;
     }
 
-    public function setCodePostal(int $code_postal): static
+    public function setCodePostal(string $code_postal): static
     {
         $this->code_postal = $code_postal;
 
