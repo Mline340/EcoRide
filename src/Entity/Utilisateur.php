@@ -6,12 +6,16 @@ use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-class Utilisateur
+class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
+
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -27,11 +31,11 @@ class Utilisateur
     #[Groups(['utilisateur:read'])]
     private ?string $prenom = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, unique: true)]
     #[Groups(['utilisateur:read'])]
     private ?string $email = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 250)]
     #[Groups(['utilisateur:read'])]
     private ?string $password = null;
 
@@ -47,7 +51,7 @@ class Utilisateur
     #[Groups(['utilisateur:read'])]
     private ?string $date_naissance = null;
 
-    #[ORM\Column(length: 150)]
+    #[ORM\Column(length: 150, nullable: true)]
     #[Groups(['utilisateur:read'])]
     private ?string $photo = null;
 
@@ -82,15 +86,25 @@ class Utilisateur
     private Collection $Covoiturage;
 
     #[ORM\OneToOne(inversedBy: 'utilisateur', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Configuration $configuration = null;
 
-    public function __construct()
+    #[ORM\Column(length: 255)]
+    private ?string $apiToken = null;
+
+    /**@throws \Exception  */
+    public function __construct(){
+        {
+        $this->apiToken = bin2hex(random_bytes(20));
+    }
+
     {
         $this->voitures = new ArrayCollection();
         $this->Avis = new ArrayCollection();
         $this->Covoiturage = new ArrayCollection();
     }
+    }
+    
 
     public function getId(): ?int
     {
@@ -217,6 +231,22 @@ class Utilisateur
         return $this;
     }
 
+    public function getUserIdentifier(): string
+    {
+    return $this->email; // ou autre champ unique
+    }
+
+    public function getRoles(): array
+    {
+    // Récupère le rôle depuis la relation avec l'entité Role
+        if ($this->Role) {
+         return [$this->Role->getLibelle()];
+    }
+
+    return ['ROLE_USER']; // valeur par défaut
+    
+    }
+
     /**
      * @return Collection<int, Voiture>
      */
@@ -317,5 +347,22 @@ class Utilisateur
         $this->configuration = $configuration;
 
         return $this;
+    }
+
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    public function setApiToken(string $apiToken): static
+    {
+        $this->apiToken = $apiToken;
+
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+    // Si tu stockes des données sensibles temporaires, efface-les ici
     }
 }

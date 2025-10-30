@@ -8,6 +8,7 @@ use App\Entity\Utilisateur;
 use App\Repository\UtilisateurRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,7 +29,40 @@ final class UtilisateurController extends AbstractController
 
         }
 
-     #[Route(name: 'new', methods:['POST'])]
+     #[Route('/new', name: 'new', methods:['POST'])]
+     /** @OA\Post(
+     *     path="/api/utilisateur/new",
+     *     summary="Inscription d'un nouvel utilisateur",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Données de l'utilisateur à inscrire",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="nom", type="string", example="Dupont"),
+     *             @OA\Property(property="prenom", type="string", example="thomas"),
+     *             @OA\Property(property="email", type="string", example="thomas@email.com"),
+     *             @OA\Property(property="password", type="string", example="DupThom"),
+     *             @OA\Property(property="telephone", type="string", example="456789"),
+     *             @OA\Property(property="ville", type="string", example="assas"),
+     *             @OA\Property(property="date_naissance", type="string", example="02/08/1996"),
+     *             @OA\Property(property="photo", type="string", example="toto"),
+     *             @OA\Property(property="pseudo", type="string", example="ThoDup"),
+     *             @OA\Property(property="code_postal", type="string", example="34820"),
+     *             @OA\Property(property="configuration", type="string", example="7")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Utilisateur inscrit avec succès",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="userutilisateur", type="string", example="Nom d'utilisateur"),
+     *             @OA\Property(property="apiToken", type="string", example="31a023e212f116124a36af14ea0c1c3806eb9378"),
+     *             @OA\Property(property="roles", type="array", @OA\Items(type="string", example="ROLE_USER"))
+     *         )
+     *     )
+     * )
+     */
     public function new(Request $request):JsonResponse
     {
 
