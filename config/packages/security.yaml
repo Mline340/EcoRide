@@ -47,7 +47,9 @@ security:
          - { path: ^/api/doc, roles: PUBLIC_ACCESS }
          - { path: ^/api/docs, roles: PUBLIC_ACCESS }
          - { path: ^/_profiler, roles: PUBLIC_ACCESS }
-         - { path: ^/api, roles: ROLE_USER }
+         - { path: ^/api/preference, roles: IS_AUTHENTICATED_FULLY }
+         - { path: ^/api/voiture, roles: IS_AUTHENTICATED_FULLY }
+         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

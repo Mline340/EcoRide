@@ -13,21 +13,27 @@ class Voiture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['voiture:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $modèle = null;
+    #[Groups(['voiture:read'])]
+    private ?string $modele = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['voiture:read'])]
     private ?string $immatriculation = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['voiture:read'])]
     private ?string $energie = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['voiture:read'])]
     private ?string $couleur = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['voiture:read'])]
     private ?string $date_premiere_immatriculation = null;
 
     #[ORM\ManyToOne(inversedBy: 'voitures')]
@@ -53,14 +59,14 @@ class Voiture
         return $this->id;
     }
 
-    public function getModèle(): ?string
+    public function getModele(): ?string
     {
-        return $this->modèle;
+        return $this->modele;
     }
 
-    public function setModèle(string $modèle): static
+    public function setModele(string $modele): static
     {
-        $this->modèle = $modèle;
+        $this->modele = $modele;
 
         return $this;
     }

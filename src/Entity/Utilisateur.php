@@ -51,7 +51,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['utilisateur:read'])]
     private ?string $date_naissance = null;
 
-    #[ORM\Column(length: 150, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['utilisateur:read'])]
     private ?string $photo = null;
 
@@ -91,6 +91,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $apiToken = null;
+
+    #[ORM\OneToOne(mappedBy: 'Utilisateur', cascade: ['persist', 'remove'])]
+    private ?Preference $preference = null;
 
     /**@throws \Exception  */
     public function __construct(){
@@ -364,5 +367,22 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
     // Si tu stockes des données sensibles temporaires, efface-les ici
+    }
+
+    public function getPreference(): ?Preference
+    {
+        return $this->preference;
+    }
+
+    public function setPreference(Preference $preference): static
+    {
+        // set the owning side of the relation if necessary
+        if ($preference->getUtilisateur() !== $this) {
+            $preference->setUtilisateur($this);
+        }
+
+        $this->preference = $preference;
+
+        return $this;
     }
 }
