@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Voiture;
+use App\Entity\Covoiturage;
 use App\Entity\Utilisateur;
-use App\Repository\VoitureRepository;
+use App\Repository\CovoiturageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,46 +12,48 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/voiture', name: 'app_api_')]
-#[OA\Tag(name: 'Voiture')]
-class VoitureController extends AbstractController
+#[Route('/api/covoiturage', name: 'app_api_')]
+#[OA\Tag(name: 'Covoiturage')]
+class CovoiturageController extends AbstractController
 {
-        public function __construct(
+          public function __construct(
         private EntityManagerInterface $manager,
-        private VoitureRepository $repository
+        private CovoiturageRepository $covoiturage
     ){ }
-    
-     #[Route('/{id}', methods: ['POST'])]
+#[Route('', methods: ['POST'])]
         #[OA\Post(
-        path: '/api/voiture/{id}',
-        summary: 'Ajout d\'un véhicule',
-        parameters: [
-        new OA\Parameter(
-            name: 'id',
-            in: 'path',
-            required: true,
-            description: 'Id de l\'utilisateur à afficher',
-            schema: new OA\Schema(type: 'integer')
-         )
-      ],
+        path: '/api/covoiturage',
+        summary: 'Ajout d\'un trajet',
         security: [['bearerAuth' => []]],
+        parameters: [
+                new OA\Parameter(
+                    name: 'id',
+                    in: 'path',
+                    required: true,
+                    description: 'Id de l\'utilisateur à afficher',
+                    schema: new OA\Schema(type: 'integer')
+                )
+            ],
         requestBody: new OA\RequestBody(
             required: true,
-            description: 'Véhicule de l\'utilisateur à ajouter',
+            description: 'Nouveau trajet mit en ligne',
             content: new OA\JsonContent(
                 properties: [
-                            new OA\Property(property: 'modele', type: 'string', example: 'Renault Clio'),
-                            new OA\Property(property: 'immatriculation', type: 'string', example: 'XX-00-XX'),
-                            new OA\Property(property: 'energie', type: 'string', example: 'Electrique'),
-                            new OA\Property(property: 'couleur', type: 'string', example: 'Blanche'),
-                            new OA\Property(property: 'date_premiere_immatriculation', type: 'string', example: '01/01/2021'),
+                            new OA\Property(property: 'date_depart', type: 'DateTime', example: '03/11/2025'),
+                            new OA\Property(property: 'heure_depart', type: 'DateTime', example: '15'),
+                            new OA\Property(property: 'lieu_depart', type: 'string', example: 'Montpellier'),
+                            new OA\Property(property: 'date_arrivee', type: 'DateTime', example: '03/11/2025'),
+                            new OA\Property(property: 'heure_arrivee', type: 'DateTime', example: '17h'),
+                            new OA\Property(property: 'lieu_arrivee', type: 'String', example: 'Marseille'),
+                            new OA\Property(property: 'Statut', type: 'String', example: 'Pose pour manger le midi'),
+                            new OA\Property(property: 'Prix', type: 'float', example: '15'),
                 ]
             )
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Véhicule ajouté avec succès',
+                description: 'Trajet ajouté avec succès',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'userutilisateur', type: 'string', example: 'Nom d\'utilisateur'),
@@ -62,7 +64,7 @@ class VoitureController extends AbstractController
               )
             ]
         )]
-    public function updateVoitureByuserId(int $id, Request $request): JsonResponse
+    public function updateCovoiturage(int $id, Request $request): JsonResponse
     {
    
         $utilisateur = $this->manager->getRepository(Utilisateur::class)->find($id);
@@ -74,15 +76,15 @@ class VoitureController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
  
-        $voitures = $this->repository->findBy(['utilisateur' => $utilisateur]);
+        $covoiturage = $this->repository->findBy(['utilisateur' => $utilisateur]);
 
-    // Création du véhicule
-    $voiture = new Voiture();
-    $voiture->setUtilisateur($utilisateur);
-    $voiture->setModele($data['modele']);
-    $voiture->setImmatriculation($data['immatriculation']);
-    $voiture->setEnergie($data['energie'] ?? null);
-    $voiture->setCouleur($data['couleur'] ?? null);
+    // Création d'un trajet
+    $covoiturage = new Voiture();
+    $covoiturage->setUtilisateur($utilisateur);
+    $covoiturage->setModele($data['modele']);
+    $covoiturage->setImmatriculation($data['immatriculation']);
+    $covoiturage->setEnergie($data['energie'] ?? null);
+    $covoiturage->setCouleur($data['couleur'] ?? null);
    
     if (empty($data['date_premiere_immatriculation'])) {
     return $this->json(["error" => "Le champ 'date_premiere_immatriculation' est obligatoire"], 400);
@@ -98,8 +100,8 @@ class VoitureController extends AbstractController
 
     // Réponse JSON
     return $this->json([
-        "message" => "Véhicule ajouté avec succès ✅",
-        "voiture" => [
+            "message" => "Véhicule ajouté avec succès ✅",
+            "voiture" => [
             "id" => $voiture->getId(),
             "modele" => $voiture->getModele(),
             "immatriculation" => $voiture->getImmatriculation(),
@@ -110,20 +112,10 @@ class VoitureController extends AbstractController
     ], 201);
 }
 
-
-    #[Route('/{id}', methods: ['GET'])]
+    #[Route('', methods: ['GET'])]
      #[OA\Get(
-            path: '/api/voiture/{id}',
-            summary: 'Afficher les véhicules d\'un utilisateur par son ID',
-             parameters: [
-                new OA\Parameter(
-                    name: 'id',
-                    in: 'path',
-                    required: true,
-                    description: 'Id de l\'utilisateur à afficher',
-                    schema: new OA\Schema(type: 'integer')
-                )
-            ],
+            path: '/api/voiture',
+            summary: 'Afficher les véhicules d\'un utilisateur',
              responses: [
                 new OA\Response(
                     response: 200,
@@ -146,10 +138,16 @@ class VoitureController extends AbstractController
 )]
 
         
-    public function getVoiture(int $id): JsonResponse
+    public function getVoiture(VoitureRepository $repo): JsonResponse
 {
-    $utilisateur = $this->manager->getRepository(Utilisateur::class)->findBy(['id' => $id]);
-    $voiture = $this->repository->findBy(['utilisateur' => $utilisateur]);
+    $utilisateur = $this->getUser();
+
+    if (!$utilisateur) {
+        return $this->json(["error" => "Utilisateur non connecté"], 401);
+    }
+
+    // 🟢 IMPORTANT : la clé doit s’appeler exactement comme la propriété dans l’entité
+    $voiture = $repo->findBy(['utilisateur' => $utilisateur]);
     
     return $this->json($voiture, 200, [], [
         'groups' => ['voiture:read']
@@ -294,87 +292,4 @@ class VoitureController extends AbstractController
 
     return $this->json(["message" => "Véhicule supprimé avec succès"], 204);
 }
-#[Route('', methods: ['POST'])]
-        #[OA\Post(
-        path: '/api/voiture',
-        summary: 'Ajout d\'un véhicule',
-        security: [['bearerAuth' => []]],
-        requestBody: new OA\RequestBody(
-            required: true,
-            description: 'Véhicule de l\'utilisateur à ajouter',
-            content: new OA\JsonContent(
-                properties: [
-                            new OA\Property(property: 'modele', type: 'string', example: 'Renault Clio'),
-                            new OA\Property(property: 'immatriculation', type: 'string', example: 'XX-00-XX'),
-                            new OA\Property(property: 'energie', type: 'string', example: 'Electrique'),
-                            new OA\Property(property: 'couleur', type: 'string', example: 'Blanche'),
-                            new OA\Property(property: 'date_premiere_immatriculation', type: 'string', example: '01/01/2021'),
-                ]
-            )
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Véhicule ajouté avec succès',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'userutilisateur', type: 'string', example: 'Nom d\'utilisateur'),
-                        new OA\Property(property: 'apiToken', type: 'string', example: '31a023e212f116124a36af14ea0c1c3806eb9378'),
-                        new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string', example: 'ROLE_USER'))
-                    ]
-                )
-              )
-            ]
-        )]
-        public function updateVoitureByUser(
-        Request $request,
-        VoitureRepository $repo,
-        EntityManagerInterface $em
-    ): JsonResponse 
-        {
-           
-        $utilisateur = $this->getUser();
-        if (!$utilisateur) {
-            return $this->json(["error" => "Utilisateur non connecté"], 401);
-        }
-       
-
-        $data = json_decode($request->getContent(), true);
-
-         $voitures = $this->repository->findBy(['utilisateur' => $utilisateur]);
-
-    // Création du véhicule
-    $voiture = new Voiture();
-    $voiture->setUtilisateur($utilisateur);
-    $voiture->setModele($data['modele']);
-    $voiture->setImmatriculation($data['immatriculation']);
-    $voiture->setEnergie($data['energie'] ?? null);
-    $voiture->setCouleur($data['couleur'] ?? null);
-   
-    if (empty($data['date_premiere_immatriculation'])) {
-    return $this->json(["error" => "Le champ 'date_premiere_immatriculation' est obligatoire"], 400);
-    }
-
-    $voiture->setDatePremiereImmatriculation($data['date_premiere_immatriculation']);
-
-    
-
-    // Sauvegarde
-    $em->persist($voiture);
-    $em->flush();
-
-    // Réponse JSON
-    return $this->json([
-        "message" => "Véhicule ajouté avec succès ✅",
-        "voiture" => [
-            "id" => $voiture->getId(),
-            "modele" => $voiture->getModele(),
-            "immatriculation" => $voiture->getImmatriculation(),
-            "energie" => $voiture->getEnergie(),
-            "couleur" => $voiture->getCouleur(),
-            "date_premiere_immatriculation" => $voiture->getDatePremiereImmatriculation(),
-        ]
-    ], 201);
-}
-
 }

@@ -6,6 +6,8 @@ use App\Repository\VoitureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use DateTimeInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: VoitureRepository::class)]
 class Voiture
@@ -38,7 +40,7 @@ class Voiture
 
     #[ORM\ManyToOne(inversedBy: 'voitures')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Utilisateur $Utilisateur = null;
+    private ?Utilisateur $utilisateur = null;
 
     /**
      * @var Collection<int, Covoiturage>
@@ -121,12 +123,12 @@ class Voiture
 
     public function getUtilisateur(): ?Utilisateur
     {
-        return $this->Utilisateur;
+        return $this->utilisateur;
     }
 
-    public function setUtilisateur(?Utilisateur $Utilisateur): static
+    public function setUtilisateur(?Utilisateur $utilisateur): static
     {
-        $this->Utilisateur = $Utilisateur;
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }

@@ -14,33 +14,42 @@ class Covoiturage
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['covoiturage:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['covoiturage:read'])]
     private ?\DateTime $date_depart = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['covoiturage:read'])]
     private ?\DateTime $heure_depart = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['covoiturage:read'])]
     private ?string $lieu_depart = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['covoiturage:read'])]
     private ?\DateTime $date_arrivee = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['covoiturage:read'])]
     private ?\DateTime $heure_arrivee = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['covoiturage:read'])]
     private ?string $lieu_arrivee = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['covoiturage:read'])]
     private ?string $statut = null;
 
     #[ORM\Column]
     private ?int $nb_place = null;
 
     #[ORM\Column]
+    #[Groups(['covoiturage:read'])]
     private ?float $prix_personne = null;
 
     /**

@@ -129,7 +129,7 @@ final class UtilisateurController extends AbstractController
             return new JsonResponse($json, Response::HTTP_OK, [], true);
         }
         return new JsonResponse(data: null, status: Response::HTTP_NOT_FOUND);
-        ;
+        
     }
 
      #[Route('/{id}', name: 'edit', methods: ['PUT'])]

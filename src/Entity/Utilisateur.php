@@ -66,7 +66,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Voiture>
      */
-    #[ORM\OneToMany(targetEntity: Voiture::class, mappedBy: 'Utilisateur', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Voiture::class, mappedBy: 'utilisateur', orphanRemoval: true)]
     private Collection $voitures;
 
     #[ORM\ManyToOne(inversedBy: 'utilisateurs')]
