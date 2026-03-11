@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CovoiturageRepository::class)]
 class Covoiturage
@@ -21,7 +22,7 @@ class Covoiturage
     #[Groups(['covoiturage:read'])]
     private ?\DateTime $date_depart = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Groups(['covoiturage:read'])]
     private ?\DateTime $heure_depart = null;
 
@@ -29,11 +30,7 @@ class Covoiturage
     #[Groups(['covoiturage:read'])]
     private ?string $lieu_depart = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['covoiturage:read'])]
-    private ?\DateTime $date_arrivee = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Groups(['covoiturage:read'])]
     private ?\DateTime $heure_arrivee = null;
 
@@ -43,10 +40,7 @@ class Covoiturage
 
     #[ORM\Column(length: 50)]
     #[Groups(['covoiturage:read'])]
-    private ?string $statut = null;
-
-    #[ORM\Column]
-    private ?int $nb_place = null;
+    private ?string $info = null;
 
     #[ORM\Column]
     #[Groups(['covoiturage:read'])]
@@ -55,16 +49,14 @@ class Covoiturage
     /**
      * @var Collection<int, Utilisateur>
      */
-    #[ORM\ManyToMany(targetEntity: Utilisateur::class, mappedBy: 'Covoiturage')]
-    private Collection $utilisateurs;
+    #[ORM\ManyToOne(inversedBy: 'covoiturages')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Utilisateur $utilisateur = null;
 
-    #[ORM\ManyToOne(inversedBy: 'Covoiturage')]
+
+    #[ORM\ManyToOne(inversedBy: 'covoiturage')]
     private ?Voiture $voiture = null;
 
-    public function __construct()
-    {
-        $this->utilisateurs = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -107,17 +99,6 @@ class Covoiturage
         return $this;
     }
 
-    public function getDateArrivee(): ?\DateTime
-    {
-        return $this->date_arrivee;
-    }
-
-    public function setDateArrivee(\DateTime $date_arrivee): static
-    {
-        $this->date_arrivee = $date_arrivee;
-
-        return $this;
-    }
 
     public function getHeureArrivee(): ?\DateTime
     {
@@ -143,26 +124,14 @@ class Covoiturage
         return $this;
     }
 
-    public function getStatut(): ?string
+    public function getInfo(): ?string
     {
-        return $this->statut;
+        return $this->info;
     }
 
-    public function setStatut(string $statut): static
+    public function setInfo(string $info): static
     {
-        $this->statut = $statut;
-
-        return $this;
-    }
-
-    public function getNbPlace(): ?int
-    {
-        return $this->nb_place;
-    }
-
-    public function setNbPlace(int $nb_place): static
-    {
-        $this->nb_place = $nb_place;
+        $this->info = $info;
 
         return $this;
     }
@@ -182,28 +151,15 @@ class Covoiturage
     /**
      * @return Collection<int, Utilisateur>
      */
-    public function getUtilisateurs(): Collection
+    public function getUtilisateur(): ?Utilisateur
     {
-        return $this->utilisateurs;
+    return $this->utilisateur;
     }
 
-    public function addUtilisateur(Utilisateur $utilisateur): static
+    public function setUtilisateur(?Utilisateur $utilisateur): self
     {
-        if (!$this->utilisateurs->contains($utilisateur)) {
-            $this->utilisateurs->add($utilisateur);
-            $utilisateur->addCovoiturage($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUtilisateur(Utilisateur $utilisateur): static
-    {
-        if ($this->utilisateurs->removeElement($utilisateur)) {
-            $utilisateur->removeCovoiturage($this);
-        }
-
-        return $this;
+    $this->utilisateur = $utilisateur;
+    return $this;
     }
 
     public function getVoiture(): ?Voiture

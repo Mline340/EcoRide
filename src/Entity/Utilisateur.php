@@ -82,8 +82,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Covoiturage>
      */
-    #[ORM\ManyToMany(targetEntity: Covoiturage::class, inversedBy: 'utilisateurs')]
-    private Collection $Covoiturage;
+    #[ORM\OneToMany(targetEntity: Covoiturage::class, mappedBy: 'utilisateur')]
+    private Collection $covoiturages;
 
     #[ORM\OneToOne(inversedBy: 'utilisateur', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
@@ -96,17 +96,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Preference $preference = null;
 
     /**@throws \Exception  */
-    public function __construct(){
-        {
-        $this->apiToken = bin2hex(random_bytes(20));
-    }
-
+    public function __construct()
     {
+        $this->apiToken = bin2hex(random_bytes(20));
         $this->voitures = new ArrayCollection();
         $this->Avis = new ArrayCollection();
-        $this->Covoiturage = new ArrayCollection();
+        $this->covoiturages = new ArrayCollection();
     }
-    }
+    
     
 
     public function getId(): ?int
@@ -319,15 +316,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Covoiturage>
      */
-    public function getCovoiturage(): Collection
+    public function getCovoiturages(): Collection
     {
-        return $this->Covoiturage;
+        return $this->covoiturages;
     }
 
     public function addCovoiturage(Covoiturage $covoiturage): static
     {
-        if (!$this->Covoiturage->contains($covoiturage)) {
-            $this->Covoiturage->add($covoiturage);
+        if (!$this->covoiturages->contains($covoiturage)) {
+            $this->covoiturage->add($covoiturage);
+            $covoiturage->setUtilisateur($this); 
         }
 
         return $this;
@@ -335,9 +333,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeCovoiturage(Covoiturage $covoiturage): static
     {
-        $this->Covoiturage->removeElement($covoiturage);
+    if ($this->covoiturages->removeElement($covoiturage)) {
+        if ($covoiturage->getUtilisateur() === $this) {
+            $covoiturage->setUtilisateur(null);
+        }
+    }
 
-        return $this;
+    return $this;
     }
 
     public function getConfiguration(): ?Configuration

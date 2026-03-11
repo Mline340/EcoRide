@@ -18,11 +18,11 @@ class CovoiturageController extends AbstractController
 {
           public function __construct(
         private EntityManagerInterface $manager,
-        private CovoiturageRepository $covoiturage
+        private CovoiturageRepository $repository
     ){ }
-#[Route('', methods: ['POST'])]
+#[Route('/{id}', methods: ['POST'])]
         #[OA\Post(
-        path: '/api/covoiturage',
+        path: '/api/covoiturage/{id}',
         summary: 'Ajout d\'un trajet',
         security: [['bearerAuth' => []]],
         parameters: [
@@ -39,14 +39,14 @@ class CovoiturageController extends AbstractController
             description: 'Nouveau trajet mit en ligne',
             content: new OA\JsonContent(
                 properties: [
-                            new OA\Property(property: 'date_depart', type: 'DateTime', example: '03/11/2025'),
-                            new OA\Property(property: 'heure_depart', type: 'DateTime', example: '15'),
+                            new OA\Property(property: 'date_depart', type: 'DateTime', example: '2025-11-03'),
+                            new OA\Property(property: 'heure_depart', type: 'DateTime', example: '15:00:00'),
                             new OA\Property(property: 'lieu_depart', type: 'string', example: 'Montpellier'),
-                            new OA\Property(property: 'date_arrivee', type: 'DateTime', example: '03/11/2025'),
-                            new OA\Property(property: 'heure_arrivee', type: 'DateTime', example: '17h'),
+                            new OA\Property(property: 'heure_arrivee', type: 'DateTime', example: '17:00:00'),
                             new OA\Property(property: 'lieu_arrivee', type: 'String', example: 'Marseille'),
-                            new OA\Property(property: 'Statut', type: 'String', example: 'Pose pour manger le midi'),
-                            new OA\Property(property: 'Prix', type: 'float', example: '15'),
+                            new OA\Property(property: 'info', type: 'String', example: 'Pose pour manger le midi'),
+                            new OA\Property(property: 'prix_personne', type: 'float', example: 15),
+                            new OA\Property(property: 'voiture_id', type: 'integer', example: 1),
                 ]
             )
         ),
@@ -74,40 +74,59 @@ class CovoiturageController extends AbstractController
          }
 
         $data = json_decode($request->getContent(), true);
-
- 
-        $covoiturage = $this->repository->findBy(['utilisateur' => $utilisateur]);
-
-    // Création d'un trajet
-    $covoiturage = new Voiture();
-    $covoiturage->setUtilisateur($utilisateur);
-    $covoiturage->setModele($data['modele']);
-    $covoiturage->setImmatriculation($data['immatriculation']);
-    $covoiturage->setEnergie($data['energie'] ?? null);
-    $covoiturage->setCouleur($data['couleur'] ?? null);
-   
-    if (empty($data['date_premiere_immatriculation'])) {
-    return $this->json(["error" => "Le champ 'date_premiere_immatriculation' est obligatoire"], 400);
+    
+     // On récupère l’ID du véhicule choisi
+    if (empty($data['voiture_id'])) {
+        return $this->json(["error" => "Veuillez sélectionner un véhicule"], 400);
     }
 
-    $voiture->setDatePremiereImmatriculation($data['date_premiere_immatriculation']);
+    $voiture = $this->manager->getRepository(Voiture::class)->find($data['voiture_id']);
 
+    // On vérifie que la voiture appartient bien à l'utilisateur
+    if (!$voiture || $voiture->getUtilisateur()->getId() !== $utilisateur->getId()) {
+        return $this->json(["error" => "Cette voiture ne vous appartient pas"], 403);
+    }
+
+    // Création d'un trajet
+    $covoiturage = new Covoiturage();
+    $covoiturage->setUtilisateur($utilisateur);
+    $covoiturage->setVoiture($voiture);
+    $covoiturage->setDateDepart(new \DateTime($data['date_depart']));
+    $covoiturage->setHeureDepart(new \DateTime($data['heure_depart']));
+    $covoiturage->setLieuDepart($data['lieu_depart'] ?? null);
+    $covoiturage->setHeureArrivee(new \DateTime($data['heure_arrivee']));
+    $covoiturage->setLieuArrivee($data['lieu_arrivee'] ?? null);
+    $covoiturage->setinfo($data['info'] ?? null);
+    $covoiturage->setPrixPersonne($data['prix_personne'] ?? null);
     
+   
+    if (
+    empty($data['date_depart']) ||
+    empty($data['heure_depart']) ||
+    empty($data['lieu_depart'])
+    ) {
+    return $this->json(["error" => "Tous les champs obligatoires doivent être remplis"], 400);
+    }
+
+  
 
     // Sauvegarde
-    $this->manager->persist($voiture);
+    $this->manager->persist($covoiturage);
     $this->manager->flush();
 
     // Réponse JSON
     return $this->json([
-            "message" => "Véhicule ajouté avec succès ✅",
-            "voiture" => [
-            "id" => $voiture->getId(),
-            "modele" => $voiture->getModele(),
-            "immatriculation" => $voiture->getImmatriculation(),
-            "energie" => $voiture->getEnergie(),
-            "couleur" => $voiture->getCouleur(),
-            "date_premiere_immatriculation" => $voiture->getDatePremiereImmatriculation(),
+            "message" => "Trajet ajouté avec succès ✅",
+            "covoiturage" => [
+            "id" => $covoiturage->getId(),
+            "date_depart" => $covoiturage->getDateDepart(),
+            "heure_depart" => $covoiturage->getHeureDepart(),
+            "lieu_depart" => $covoiturage->getLieuDepart(),
+            "heure_arrivee" => $covoiturage->getHeureArrivee(),
+            "lieu_arrivee" => $covoiturage->getLieuArrivee(),
+            "info" => $covoiturage->getInfo(),
+            "prix_personne" => $covoiturage->getPrixPersonne(),
+            "voiture_id" => $covoiturage->getvoiture(),
         ]
     ], 201);
 }

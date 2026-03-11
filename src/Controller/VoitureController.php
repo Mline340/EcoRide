@@ -150,7 +150,8 @@ class VoitureController extends AbstractController
 {
     $utilisateur = $this->manager->getRepository(Utilisateur::class)->findBy(['id' => $id]);
     $voiture = $this->repository->findBy(['utilisateur' => $utilisateur]);
-    
+       
+
     return $this->json($voiture, 200, [], [
         'groups' => ['voiture:read']
     ]);
