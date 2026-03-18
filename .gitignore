@@ -54,7 +54,10 @@
 # Node modules
 /node_modules
 
-./env
+.env.local
+.env.local.php
+.env.*.local
+.env
 /.env
 
 
