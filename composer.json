@@ -12,6 +12,7 @@
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.15",
         "doctrine/doctrine-migrations-bundle": "^3.4",
+        "doctrine/mongodb-odm-bundle": "^5.6",
         "doctrine/orm": "^3.5",
         "nelmio/api-doc-bundle": "^5.6",
         "nelmio/cors-bundle": "^2.5",
@@ -97,7 +98,8 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.3.*"
+            "require": "7.3.*",
+            "docker": true
         }
     },
     "require-dev": {
