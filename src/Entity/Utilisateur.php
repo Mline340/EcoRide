@@ -51,10 +51,10 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['utilisateur:read'])]
     private ?string $date_naissance = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['utilisateur:read'])]
     private ?string $photo = null;
-
+    
     #[ORM\Column(length: 50)]
     #[Groups(['utilisateur:read'])]
     private ?string $pseudo = null;
@@ -95,6 +95,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'Utilisateur', cascade: ['persist', 'remove'])]
     private ?Preference $preference = null;
 
+    /**
+     * @var Collection<int, Reservation>
+     */
+    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'passager')]
+    private Collection $reservations;
+
+    /**
+     * @var Collection<int, Transaction>
+     */
+    #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'utilisateur')]
+    private Collection $transactions;
+
     /**@throws \Exception  */
     public function __construct()
     {
@@ -102,6 +114,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->voitures = new ArrayCollection();
         $this->Avis = new ArrayCollection();
         $this->covoiturages = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
+        $this->transactions = new ArrayCollection();
     }
     
     
@@ -384,6 +398,66 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->preference = $preference;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setPassager($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getPassager() === $this) {
+                $reservation->setPassager(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Transaction>
+     */
+    public function getTransactions(): Collection
+    {
+        return $this->transactions;
+    }
+
+    public function addTransaction(Transaction $transaction): static
+    {
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions->add($transaction);
+            $transaction->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransaction(Transaction $transaction): static
+    {
+        if ($this->transactions->removeElement($transaction)) {
+            // set the owning side to null (unless already changed)
+            if ($transaction->getUtilisateur() === $this) {
+                $transaction->setUtilisateur(null);
+            }
+        }
 
         return $this;
     }

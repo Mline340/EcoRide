@@ -132,69 +132,78 @@ final class UtilisateurController extends AbstractController
         
     }
 
-     #[Route('/{id}', name: 'edit', methods: ['PUT'])]
-        #[OA\Put(
+    #[Route('/{id}', name: 'edit', methods: ['PUT', 'POST'])]
+    #[OA\Put(
         path: '/api/utilisateur/{id}',
         summary: 'Modifier un utilisateur par son ID',
-         parameters: [
-                new OA\Parameter(
-                    name: 'id',
-                    in: 'path',
-                    required: true,
-                    description: 'Id de l\'utilisateur à modifier',
-                    schema: new OA\Schema(type: 'integer')
-        )
-    ],
+        parameters: [
+            new OA\Parameter(
+                name: 'id', in: 'path', required: true,
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
         requestBody: new OA\RequestBody(
             required: true,
-            description: 'Données de l\'utilisateur à modifier',
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(property: 'telephone', type: 'string', example: '456789'),
-                    new OA\Property(property: 'ville', type: 'string', example: 'assas'),
-                    new OA\Property(property: 'photo', type: 'string', example: 'toto'),
-                    new OA\Property(property: 'code_postal', type: 'string', example: '34820'),
-                ]
+            description: 'Données de l\'utilisateur à modifier (multipart/form-data)',
+            // ✅ MediaType à la place de JsonContent
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: 'telephone', type: 'string', example: '456789'),
+                        new OA\Property(property: 'ville', type: 'string', example: 'assas'),
+                        new OA\Property(property: 'code_postal', type: 'string', example: '34820'),
+                        new OA\Property(property: 'photo', type: 'string', format: 'binary'), // ✅ fichier
+                    ]
+                )
             )
         ),
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Utilisateur modifié avec succès',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'userutilisateur', type: 'string', example: 'Nom d\'utilisateur'),
-                        new OA\Property(property: 'apiToken', type: 'string', example: '31a023e212f116124a36af14ea0c1c3806eb9378'),
-                        new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string', example: 'ROLE_USER'))
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Utilisateur non trouvé'
-            )
-         ]
+            new OA\Response(response: 204, description: 'Utilisateur modifié avec succès'),
+            new OA\Response(response: 404, description: 'Utilisateur non trouvé')
+        ]
     )]
-     public function edit(int $id, Request $request): JsonResponse
+    public function edit(int $id, Request $request): JsonResponse
     {
         $utilisateur = $this->repository->findOneBy(['id' => $id]);
-        if ($utilisateur) {
-            $utilisateur =$this->serializer->deserialize(
-                $request->getContent(),
-                Utilisateur::class,
-                'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE=> $utilisateur]
-            );
-            $role = $utilisateur->getRole();
-            if ($role && !$role->getId()) { // nouveau rôle
-             $this->manager->persist($role);
-            }            
-           $this->manager->flush();
 
-           return new JsonResponse(data:null, status:Response::HTTP_NO_CONTENT);
+        if (!$utilisateur) {
+            return new JsonResponse(data: null, status: Response::HTTP_NOT_FOUND);
         }
-        
-        return new JsonResponse(data:null, status:Response::HTTP_NO_FOUND);
+
+        // ✅ Récupération des champs texte depuis FormData (plus de json_decode)
+        $telephone  = $request->request->get('telephone');
+        $ville      = $request->request->get('ville');
+        $codePostal = $request->request->get('code_postal');
+
+        if ($telephone)  $utilisateur->setTelephone($telephone);
+        if ($ville)      $utilisateur->setVille($ville);
+        if ($codePostal) $utilisateur->setCodePostal($codePostal);
+
+        // ✅ Gestion de la photo uploadée
+        $photoFile = $request->files->get('photo');
+        if ($photoFile) {
+            // Supprimer l'ancienne photo si elle existe
+            $anciennePhoto = $utilisateur->getPhoto();
+            if ($anciennePhoto) {
+                $ancienChemin = $this->getParameter('photos_directory') . '/' . $anciennePhoto;
+                if (file_exists($ancienChemin)) {
+                    unlink($ancienChemin); // ← supprime l'ancien fichier
+                }
+            }
+
+            // Sauvegarder la nouvelle photo
+            $nouveauNom = uniqid() . '.' . $photoFile->guessExtension();
+            $photoFile->move(
+                $this->getParameter('photos_directory'), // public/uploads/photos
+                $nouveauNom
+            );
+            $utilisateur->setPhoto($nouveauNom); // ← stocke "a3f9b2.jpg"
+        }
+
+        $this->manager->flush();
+
+        return new JsonResponse(data: null, status: Response::HTTP_NO_CONTENT);
     }
 
      #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
