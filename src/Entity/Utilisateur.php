@@ -107,6 +107,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'utilisateur')]
     private Collection $transactions;
 
+    #[ORM\Column]
+    private int $credit = 20;
+
     /**@throws \Exception  */
     public function __construct()
     {
@@ -459,6 +462,17 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
             }
         }
 
+        return $this;
+    }
+
+    public function getCredit(): int
+    {
+        return $this->credit;
+    }
+
+    public function setCredit(int $credit): static
+    {
+        $this->credit = $credit;
         return $this;
     }
 }

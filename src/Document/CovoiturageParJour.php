@@ -2,24 +2,22 @@
 
 namespace App\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 
-#[MongoDB\Document(collection: "statistiques")]
-class Statistique
+#[Document(collection: "covoiturages_par_jour")]
+class CovoiturageParJour
 {
-    #[MongoDB\Id]
+    #[Id]
     private string $id;
 
-    #[MongoDB\Field(type: "date")]
+    #[Field(type: "date")]
     private \DateTime $date;
 
-    #[MongoDB\Field(type: "int")]
+    #[Field(type: "int")]
     private int $nombreCovoiturages;
 
-    #[MongoDB\Field(type: "float")]
-    private float $creditsGagnes;
-
-    // Getters et Setters
     public function getId(): string { return $this->id; }
 
     public function getDate(): \DateTime { return $this->date; }
@@ -27,7 +25,4 @@ class Statistique
 
     public function getNombreCovoiturages(): int { return $this->nombreCovoiturages; }
     public function setNombreCovoiturages(int $nombre): self { $this->nombreCovoiturages = $nombre; return $this; }
-
-    public function getCreditsGagnes(): float { return $this->creditsGagnes; }
-    public function setCreditsGagnes(float $credits): self { $this->creditsGagnes = $credits; return $this; }
 }
