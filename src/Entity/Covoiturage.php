@@ -46,6 +46,10 @@ class Covoiturage
     #[Groups(['covoiturage:read'])]
     private ?float $prix_personne = null;
 
+    #[ORM\Column]
+    #[Groups(['covoiturage:read'])]
+    private ?int $nb_places = null;
+
     /**
      * @var Collection<int, Utilisateur>
      */
@@ -164,6 +168,15 @@ class Covoiturage
         $this->prix_personne = $prix_personne;
 
         return $this;
+    }
+
+    public function getNbPlaces(): ?int 
+    { 
+        return $this->nb_places; 
+    }
+    public function setNbPlaces(int $nb_places): static 
+    {
+         $this->nb_places = $nb_places; return $this; 
     }
 
     /**

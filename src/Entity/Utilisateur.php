@@ -341,7 +341,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function addCovoiturage(Covoiturage $covoiturage): static
     {
         if (!$this->covoiturages->contains($covoiturage)) {
-            $this->covoiturage->add($covoiturage);
+            $this->covoiturages->add($covoiturage);
             $covoiturage->setUtilisateur($this); 
         }
 
